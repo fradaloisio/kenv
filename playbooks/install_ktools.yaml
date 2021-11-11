@@ -1,0 +1,50 @@
+
+---
+- name: "Installing tools"
+  hosts: all
+  tasks:
+    - name: install packages
+      become: true
+      ansible.builtin.package:
+        name:
+          - git
+          - vim
+          - curl
+        state: latest
+
+    - name: create ~/.local/bin/
+      ansible.builtin.file:
+        path: ~/.local/bin/
+        state: directory
+        mode: '0744'
+
+    - name: get last version of kubectl
+      uri:
+        url: https://dl.k8s.io/release/stable.txt
+        return_content: yes
+      register: kubectl_version
+  
+    - name: install kubectl {{ kubectl_version }}
+      get_url:
+        url: "https://dl.k8s.io/release/{{ kubectl_version.content }}/bin/linux/amd64/kubectl"
+        dest: ~/.local/bin/
+        mode: '0700'
+
+    - name: install krew
+      ansible.builtin.shell: |
+        (
+          set -x; cd "$(mktemp -d)" &&
+          OS="$(uname | tr '[:upper:]' '[:lower:]')" &&
+          ARCH="$(uname -m | sed -e 's/x86_64/amd64/' -e 's/\(arm\)\(64\)\?.*/\1\2/' -e 's/aarch64$/arm64/')" &&
+          KREW="krew-${OS}_${ARCH}" &&
+          curl -fsSLO "https://github.com/kubernetes-sigs/krew/releases/latest/download/${KREW}.tar.gz" &&
+          tar zxvf "${KREW}.tar.gz" &&
+          ./"${KREW}" install krew
+        )
+
+    - name: install kubectl plugin
+      ansible.builtin.shell:
+        cmd: "kubectl-krew install {{ item }}"
+      with_items:
+        - "ctx"
+        - "ns"
