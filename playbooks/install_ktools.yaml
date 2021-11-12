@@ -50,3 +50,4 @@
         - "ns"
         - "kvaps/node-shell"
         - "tail"
+        - "ingress-nginx"
