@@ -23,3 +23,9 @@ The user and the host can be passed using the -u and -i options.
 ```sh
 ansible-playbook -u remote_user -i remote_host, playbooks/some.yaml
 ```
+
+Or run it locally.
+
+```sh
+ansible-playbook -c local -u dude -i localhost, playbooks/install_ktools.yaml
+```
