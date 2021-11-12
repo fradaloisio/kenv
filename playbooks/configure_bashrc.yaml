@@ -32,14 +32,6 @@
         state: present
         backup: true
 
-    - name: export KREW_ROOT variable
-      ansible.builtin.lineinfile:
-        path: ~/.bashrc
-        regexp: '^export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"'
-        line: 'export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"'
-        state: present
-        backup: true
-
     - name: add kubectl completion
       ansible.builtin.lineinfile:
         path: ~/.bashrc
