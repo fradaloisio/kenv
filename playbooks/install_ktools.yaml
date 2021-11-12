@@ -42,9 +42,16 @@
           ./"${KREW}" install krew
         )
 
+    - name: index krew plugin
+      ansible.builtin.shell:
+        cmd: "kubectl-krew index add kvaps {{ item }}"
+      with_items:
+        - "https://github.com/kvaps/krew-index"
+
     - name: install kubectl plugin
       ansible.builtin.shell:
         cmd: "kubectl-krew install {{ item }}"
       with_items:
         - "ctx"
         - "ns"
+        - "kvaps/node-shell"
